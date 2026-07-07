@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# cv generator: extracted system fonts (do not redistribute)
+/scripts/.fonts/
+/scripts/.venv/
+
+# local tooling
+/.claude/

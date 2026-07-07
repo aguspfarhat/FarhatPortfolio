@@ -1,50 +1,199 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
 @import "tailwindcss";
 
+/*
+  Design system — "Graphite on White"
+  A restrained, near-monochrome identity. White canvas, ink-black type,
+  a single cobalt accent used sparingly. Signature devices: mono eyebrows,
+  hairline borders, soft depth, one dark band for narrative contrast.
+*/
 
-:root {
-  /* --background: #ffffff; */
-  --background: #171810;
-  /* --foreground: #ffffff; */
-  --foreground: #171810;
-  /* --font-sans: 'DM Sans', sans-serif; */
+@theme {
+  /* Surfaces */
+  --color-canvas: #ffffff;
+  --color-panel: #fafafa;
+  --color-panel-2: #f4f4f5;
+
+  /* Ink scale (text) */
+  --color-ink: #0a0a0b;
+  --color-ink-soft: #26262b;
+  --color-muted: #5b5b63;
+  --color-faint: #8a8a93;
+  --color-ghost: #b4b4bb;
+
+  /* Hairlines */
+  --color-line: #e7e7ea;
+  --color-line-soft: #efeff1;
+  --color-line-strong: #d9d9de;
+
+  /* Accent — a refined cobalt, used rarely */
+  --color-accent: #2354e6;
+  --color-accent-strong: #1a41c4;
+  --color-accent-soft: #eef2fe;
+  --color-accent-ink: #ffffff;
+
+  /* Dark band (contact / contrast) */
+  --color-night: #0a0a0b;
+  --color-night-2: #121216;
+  --color-night-line: #26262d;
+
+  /* Fonts (wired from next/font in layout.tsx) */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  /* Easing / timing */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    /* --background: #ffffff; */
-    --background: #171810;
-    /* --foreground: #ededed; */
-    --foreground: #171810;
+    color-scheme: light;
+    --radius: 14px;
+  }
+
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink-soft);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-ink);
+    color: #fff;
+  }
+
+  h1, h2, h3, h4 {
+    color: var(--color-ink);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Consistent, accessible focus ring */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Honor autofill on the light theme */
+  input:-webkit-autofill,
+  textarea:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+    -webkit-text-fill-color: var(--color-ink) !important;
+    caret-color: var(--color-ink);
+    transition: background-color 5000s ease-in-out 0s;
   }
 }
 
-body {
-  background: var(--background);
-  color: #adadad;
-  /* font-family: var(--font-sans); */
-  font-family: 'DM Sans', sans-serif;
+@layer utilities {
+  /* Eyebrow / section label */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-faint);
+  }
+
+  /* Fluid display type for hero */
+  .text-display {
+    font-size: clamp(2.6rem, 6.5vw, 5.25rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    font-weight: 600;
+  }
+
+  .text-h2 {
+    font-size: clamp(1.9rem, 3.6vw, 2.9rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    font-weight: 600;
+  }
+
+  /* Subtle blueprint grid for the hero backdrop */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, var(--color-line-soft) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-line-soft) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  .bg-dot {
+    background-image: radial-gradient(var(--color-line-strong) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  /* Radial mask so patterns fade at the edges */
+  .mask-fade {
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 40%, transparent 100%);
+  }
+
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  }
+
+  /* Soft, premium elevation */
+  .shadow-card {
+    box-shadow:
+      0 1px 1px rgba(10, 10, 11, 0.03),
+      0 4px 12px rgba(10, 10, 11, 0.04),
+      0 12px 32px rgba(10, 10, 11, 0.05);
+  }
+
+  .shadow-card-hover {
+    box-shadow:
+      0 1px 1px rgba(10, 10, 11, 0.04),
+      0 8px 24px rgba(10, 10, 11, 0.07),
+      0 24px 56px rgba(10, 10, 11, 0.08);
+  }
+
+  /* Marquee for the tech ribbon */
+  .animate-marquee {
+    animation: marquee 34s linear infinite;
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* Ambient status pulse */
+  .animate-ping-slow {
+    animation: ping-slow 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
+  @keyframes ping-slow {
+    0% { transform: scale(1); opacity: 0.55; }
+    75%, 100% { transform: scale(2.4); opacity: 0; }
+  }
 }
 
-/* 
-main{
-  background: var(--background);
-  color: white;
-  font-family: var(--font-sans); 
-} */
-
-input:-webkit-autofill,
-textarea:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0px 1000px #1f211a inset !important;
-  -webkit-text-fill-color: #adadad !important;
-  color: #adadad !important;
-  caret-color: #adadad !important;
-  transition: background-color 5000s ease-in-out 0s;
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

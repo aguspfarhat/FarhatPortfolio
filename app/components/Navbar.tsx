@@ -1,241 +1,171 @@
-// "use client";
-
-// import { useEffect, useState } from "react";
-
-// type Section = {
-//   label: string;
-//   id: string;
-// };
-
-// const sections: Section[] = [
-//   { label: "Home", id: "" },
-//   { label: "About me", id: "about" },
-//   { label: "Projects", id: "projects" },
-//   { label: "Capacities", id: "capacities" },
-//   { label: "Contact me", id: "contact" },
-// ];
-
-// export default function Navbar() {
-//   const [activeSection, setActiveSection] = useState("Home");
-//   const [menuOpen, setMenuOpen] = useState(false);
-
-//   useEffect(() => {
-//     const handleScroll = () => {
-//       const scrollPosition = window.scrollY + 100;
-//       let currentSection = "Home";
-
-//       for (const section of sections) {
-//         const el = section.id ? document.getElementById(section.id) : document.body;
-//         if (el && el.offsetTop <= scrollPosition) {
-//           currentSection = section.label;
-//         }
-//       }
-
-//       setActiveSection(currentSection);
-//     };
-
-//     window.addEventListener("scroll", handleScroll);
-//     return () => window.removeEventListener("scroll", handleScroll);
-//   }, []);
-
-//   const scrollToSection = (id: string) => {
-//     const element = id ? document.getElementById(id) : document.body;
-//     if (element) {
-//       window.scrollTo({
-//         top: element.offsetTop - 60,
-//         behavior: "smooth",
-//       });
-//       setMenuOpen(false);
-//     }
-//   };
-
-//   return (
-//     <nav className="w-full h-16 sticky top-0 backdrop-blur z-50 flex items-center px-6 bg-transparent">
-//       {/* Menú horizontal solo en md+ */}
-//       <div className="flex justify-center flex-1">
-//         <ul className="hidden md:flex space-x-8">
-//           {sections.map(({ label, id }) => (
-//             <li
-//               key={label}
-//               onClick={() => scrollToSection(id)}
-//               className={`relative text-[#adadad] hover:text-[#ff6d4d] transition-colors duration-200 cursor-pointer after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-[#ff6d4d] after:transition-all after:duration-300 after:rounded-full
-//                 ${activeSection === label
-//                   ? "after:w-full"
-//                   : "after:w-0 hover:after:w-full"
-//                 } pb-1`}
-//             >
-//               {label}
-//             </li>
-//           ))}
-//         </ul>
-//       </div>
-
-//       {/* Botón hamburguesa solo en móvil */}
-//       <button
-//         onClick={() => setMenuOpen(!menuOpen)}
-//         className="md:hidden flex flex-col justify-center items-center w-8 h-8 space-y-1.5"
-//         aria-label="Toggle menu"
-//       >
-//         <span
-//           className={`block h-0.5 w-full bg-[#adadad] rounded transition duration-300 ease-in-out
-//           ${menuOpen ? "rotate-45 translate-y-2" : ""}`}
-//         />
-//         <span
-//           className={`block h-0.5 w-full bg-[#adadad] rounded transition duration-300 ease-in-out
-//           ${menuOpen ? "opacity-0" : ""}`}
-//         />
-//         <span
-//           className={`block h-0.5 w-full bg-[#adadad] rounded transition duration-300 ease-in-out
-//           ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`}
-//         />
-//       </button>
-
-//       {/* Menú desplegable móvil */}
-//       <div
-//         className={`fixed top-16 right-0 bg-[#171810] backdrop-blur-md w-48 py-4 flex flex-col space-y-4 px-6 transition-transform duration-300 ease-in-out md:hidden
-//           ${menuOpen ? "translate-x-0" : "translate-x-full"}
-//            bg-[#171810] backdrop-blur-md
-//           `}
-//       >
-//         {sections.map(({ label, id }) => (
-//           <button
-//             key={label}
-//             onClick={() => scrollToSection(id)}
-//             className={`text-left text-[#adadad] hover:text-[#ff6d4d] transition-colors duration-200`}
-//           >
-//             {label}
-//           </button>
-//         ))}
-//       </div>
-//     </nav>
-
-
-//   );
-// }
-
 "use client";
 
 import { useEffect, useState } from "react";
-
-type Section = {
-  label: string;
-  id: string;
-};
-
-const sections: Section[] = [
-  { label: "Home", id: "" },
-  { label: "About me", id: "about" },
-  { label: "Projects", id: "projects" },
-  { label: "Capacities", id: "capacities" },
-  { label: "Contact me", id: "contact" },
-];
+import { ArrowUpRight, Menu, X } from "lucide-react";
+import { navIds, profile } from "../lib/content";
+import { useLang } from "../lib/i18n";
+import BrandMark from "./BrandMark";
 
 export default function Navbar() {
-  const [activeSection, setActiveSection] = useState("Home");
-  const [menuOpen, setMenuOpen] = useState(false);
+  const { t, lang, toggle } = useLang();
+  const [scrolled, setScrolled] = useState(false);
+  const [active, setActive] = useState<string>("");
+  const [open, setOpen] = useState(false);
+
+  const sections = navIds.map((id) => ({ id, label: t.nav[id] }));
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + 100;
-      let currentSection = "Home";
-
-      for (const section of sections) {
-        const el = section.id ? document.getElementById(section.id) : document.body;
-        if (el && el.offsetTop <= scrollPosition) {
-          currentSection = section.label;
-        }
-      }
-
-      setActiveSection(currentSection);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const scrollToSection = (id: string) => {
-    const element = id ? document.getElementById(id) : document.body;
-    if (element) {
-      window.scrollTo({
-        top: element.offsetTop - 60,
-        behavior: "smooth",
-      });
-    }
-    setMenuOpen(false); // Cierra menú al elegir
-  };
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]) setActive(visible[0].target.id);
+      },
+      { rootMargin: "-45% 0px -50% 0px", threshold: [0, 0.25, 0.5, 1] },
+    );
+    navIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   return (
-    <>
-      <nav className="w-full h-16 sticky top-0 backdrop-blur z-50 flex items-center px-6 bg-transparent">
-        {/* Botón hamburguesa solo en móvil, a la izquierda */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden flex flex-col justify-center items-center w-8 h-8 space-y-1.5 mr-4"
-          aria-label="Toggle menu"
-        >
-          <span
-            className={`block h-0.5 w-full bg-[#adadad] rounded transition duration-300 ease-in-out
-            ${menuOpen ? "rotate-45 translate-y-2" : ""}`}
-          />
-          <span
-            className={`block h-0.5 w-full bg-[#adadad] rounded transition duration-300 ease-in-out
-            ${menuOpen ? "opacity-0" : ""}`}
-          />
-          <span
-            className={`block h-0.5 w-full bg-[#adadad] rounded transition duration-300 ease-in-out
-            ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`}
-          />
-        </button>
+    <header className="fixed inset-x-0 top-0 z-50">
+      <div
+        className={`transition-all duration-300 ${
+          scrolled
+            ? "border-b border-line bg-canvas/80 backdrop-blur-xl"
+            : "border-b border-transparent bg-transparent"
+        }`}
+      >
+        <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
+          <a href="#top" className="group flex items-center gap-2.5" aria-label={`${profile.name} — home`}>
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-ink text-white transition-transform duration-300 group-hover:-rotate-6">
+              <BrandMark className="h-[22px] w-[22px]" />
+            </span>
+            <span className="hidden text-sm font-medium tracking-tight text-ink sm:block">
+              {profile.name}
+            </span>
+          </a>
 
-        {/* Menú horizontal solo en md+ */}
-        <div className="flex justify-center flex-1">
-          <ul className="hidden md:flex space-x-8">
-            {sections.map(({ label, id }) => (
-              <li
-                key={label}
-                onClick={() => scrollToSection(id)}
-                className={`relative text-[#adadad] hover:text-[#ff6d4d] transition-colors duration-200 cursor-pointer after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-[#ff6d4d] after:transition-all after:duration-300 after:rounded-full
-                  ${activeSection === label
-                    ? "after:w-full"
-                    : "after:w-0 hover:after:w-full"
-                  } pb-1`}
-              >
-                {label}
+          <ul className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 md:flex">
+            {sections.map((s) => (
+              <li key={s.id}>
+                <a
+                  href={`#${s.id}`}
+                  className={`relative rounded-full px-3.5 py-2 text-sm transition-colors duration-200 ${
+                    active === s.id ? "text-ink" : "text-muted hover:text-ink"
+                  }`}
+                >
+                  {active === s.id && (
+                    <span className="absolute inset-0 rounded-full bg-panel-2" aria-hidden />
+                  )}
+                  <span className="relative">{s.label}</span>
+                </a>
               </li>
             ))}
           </ul>
-        </div>
-      </nav>
 
-      {/* Overlay sin blur, solo semitransparente */}
-      {menuOpen && (
-        <div
-          onClick={() => setMenuOpen(false)}
-          className="fixed inset-0 bg-black/30 z-40 md:hidden"
-        />
-      )}
+          <div className="flex items-center gap-2">
+            <LangToggle lang={lang} onToggle={toggle} switchTo={t.langSwitchTo} />
+            <a
+              href="#contact"
+              className="hidden items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-sm font-medium text-white transition-transform duration-200 hover:scale-[1.03] active:scale-95 md:inline-flex"
+            >
+              {t.nav.cta}
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
 
-      {/* Menú desplegable móvil a la izquierda con fondo borroso */}
-      <div
-        className={`fixed top-16 left-0 h-screen w-48 py-4 flex flex-col space-y-4 px-6 transition-transform duration-300 ease-in-out md:hidden z-50
-          bg-[#171810]/70 backdrop-blur-md
-          ${menuOpen ? "translate-x-0" : "-translate-x-full"}
-        `}
-      >
-        {sections.map(({ label, id }) => (
-          <button
-            key={label}
-            onClick={() => scrollToSection(id)}
-            className="text-left text-[#adadad] hover:text-[#ff6d4d] transition-colors duration-200"
-          >
-            {label}
-          </button>
-        ))}
+            <button
+              onClick={() => setOpen((v) => !v)}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-line text-ink md:hidden"
+              aria-label={open ? "Close menu" : "Open menu"}
+              aria-expanded={open}
+            >
+              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+        </nav>
       </div>
-    </>
+
+      {/* Mobile menu */}
+      <div
+        className={`fixed inset-x-0 bottom-0 top-16 z-40 origin-top bg-canvas px-5 pb-8 pt-4 transition-all duration-300 md:hidden ${
+          open ? "pointer-events-auto opacity-100" : "pointer-events-none -translate-y-2 opacity-0"
+        }`}
+      >
+        <ul className="flex flex-col divide-y divide-line-soft">
+          {sections.map((s, i) => (
+            <li key={s.id}>
+              <a
+                href={`#${s.id}`}
+                onClick={() => setOpen(false)}
+                className="flex items-center justify-between py-4 text-lg text-ink"
+              >
+                <span>{s.label}</span>
+                <span className="eyebrow tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <a
+          href="#contact"
+          onClick={() => setOpen(false)}
+          className="mt-6 flex items-center justify-center gap-1.5 rounded-full bg-ink px-4 py-3 text-sm font-medium text-white"
+        >
+          {t.nav.cta}
+          <ArrowUpRight className="h-4 w-4" />
+        </a>
+      </div>
+    </header>
   );
 }
 
-
-
-
+function LangToggle({ lang, onToggle, switchTo }: { lang: string; onToggle: () => void; switchTo: string }) {
+  return (
+    <button
+      onClick={onToggle}
+      className="group relative inline-flex items-center rounded-full border border-line-strong bg-canvas p-0.5 text-xs font-medium"
+      aria-label={`Switch language to ${switchTo}`}
+      title={`Switch language to ${switchTo}`}
+    >
+      <span
+        className={`relative z-10 rounded-full px-2.5 py-1 transition-colors ${
+          lang === "en" ? "text-white" : "text-muted"
+        }`}
+      >
+        EN
+      </span>
+      <span
+        className={`relative z-10 rounded-full px-2.5 py-1 transition-colors ${
+          lang === "es" ? "text-white" : "text-muted"
+        }`}
+      >
+        ES
+      </span>
+      <span
+        aria-hidden
+        className={`absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-full bg-ink transition-transform duration-300 ease-out ${
+          lang === "es" ? "translate-x-[calc(100%+0px)]" : "translate-x-0"
+        }`}
+        style={{ left: 2 }}
+      />
+    </button>
+  );
+}

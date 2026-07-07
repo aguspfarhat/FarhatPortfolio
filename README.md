@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Agustín Pérez Farhat — Portfolio
 
-## Getting Started
+Personal portfolio of Agustín Pérez Farhat, full-stack web developer. Designed and
+built from scratch with a restrained, near-monochrome identity (white canvas, ink
+type, a single cobalt accent).
 
-First, run the development server:
+## Stack
+
+- **Next.js 15** (App Router, Turbopack) · **React 19** · **TypeScript**
+- **Tailwind CSS v4** with a token-driven design system (`app/globals.css`)
+- **Framer Motion** for scroll reveals and micro-interactions
+- **Nodemailer** for the contact form API (`app/api/contact`)
+- **Bilingual (EN/ES)** via a lightweight context (`app/lib/i18n.tsx`); all copy in `app/lib/content.ts`
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Contact form
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The `/api/contact` route sends email via Gmail. Set these environment variables
+(e.g. in `.env.local`) for it to work:
 
-## Learn More
+```bash
+EMAIL_USER=your@gmail.com
+EMAIL_PASSWORD=your_app_password   # a Gmail App Password, not your login password
+```
 
-To learn more about Next.js, take a look at the following resources:
+Without them, the form fails gracefully and asks visitors to email directly.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+app/
+  layout.tsx            Fonts, metadata, shell
+  page.tsx              Section composition
+  globals.css           Design tokens + utilities
+  lib/content.ts        All copy & data (single source of truth)
+  components/
+    Navbar.tsx  Footer.tsx  Reveal.tsx  SectionHeader.tsx
+    sections/   Hero · Work · About · Stack · Process · Contact
+  api/contact/route.ts  Contact form handler
+```
 
-## Deploy on Vercel
+## CVs
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Two résumés are served from `public/` and shown in an in-page preview (view without
+downloading, plus a download button) via `app/components/CvViewer.tsx`:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `CV-AgustinPerez.pdf` — English, the original (never edited programmatically).
+- `CV-AgustinPerezFarhat-ES.pdf` — Spanish, generated to match the English design.
+
+If you update the English CV, regenerate the Spanish one (macOS):
+
+```bash
+python3 -m venv scripts/.venv && scripts/.venv/bin/pip install pymupdf fonttools
+scripts/.venv/bin/python scripts/generate_es_cv.py
+```
+
+## Build
+
+```bash
+npm run build && npm run start
+```
